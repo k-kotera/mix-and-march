@@ -1,12 +1,11 @@
 
-/* reuse base tokens; add DQ layout bits */
 :root{
   --bg:#0f1220; --panel:#171a2b; --panel2:#1d2140; --text:#e9ecff; --muted:#9aa4c7;
   --accent:#79ffe1; --good:#86efac; --bad:#fca5a5; --warn:#fde047; --btn:#2a2f57;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.wrap{display:grid;grid-template-columns:1fr 300px;grid-template-rows:56px 120px 1fr 220px;gap:10px;height:100%;padding:10px}
+.wrap{display:grid;grid-template-columns:1fr 300px;grid-template-rows:56px 150px 1fr 220px;gap:10px;height:100%;padding:10px}
 header{grid-column:1 / span 2;background:var(--panel);border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
 header .title{font-weight:800;letter-spacing:.3px}
 header .controls{display:flex;gap:8px;align-items:center}
@@ -15,24 +14,29 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .pill{background:var(--panel2);border:1px solid #2c2f55;border-radius:12px;padding:6px 10px;color:var(--text)}
 
 .partyTop{grid-column:1;background:var(--panel);border-radius:14px;padding:10px}
-.partyRow{display:flex;gap:10px;overflow:auto}
-.pCard{min-width:180px;background:var(--panel2);border:1px solid #2e335f;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.partyRow{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+.pCard{min-width:200px;background:var(--panel2);border:1px solid #2e335f;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
 .pCard .name{font-weight:700}
 .pCard .badges{display:flex;gap:6px;flex-wrap:wrap}
 .badge{display:inline-block;background:#24316b;border:1px solid #3b4a92;border-radius:999px;padding:2px 8px;font-size:11px}
 
-.dq-battle{grid-column:1;background:var(--panel);border-radius:14px;padding:12px;position:relative}
-.enemyRow{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;height:100%}
-.eSlot{border:1px dashed #39407a;border-radius:12px;background:#1a1e38;position:relative;overflow:hidden}
+.dq-battle{grid-column:1;background:var(--panel);border-radius:14px;padding:12px;position:relative;display:grid;grid-template-rows:1fr 110px;gap:8px}
+.enemyRow{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.eSlot{border:1px dashed #39407a;border-radius:12px;background:#1a1e38;position:relative;overflow:hidden;min-height:96px}
 .eCard{position:absolute;inset:6px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#2b355f;display:flex;flex-direction:column;gap:6px;padding:8px}
 .eName{font-weight:700}
 .hpbar{height:6px;background:#3b3f69;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
 .hp{height:100%;background:linear-gradient(90deg,#78f3ae,#47d18f);width:100%}
 .dmg{position:absolute;left:50%;top:6px;transform:translateX(-50%);font-weight:800;font-size:14px;opacity:.95}
 
+.battleLog{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px;font-size:13px;overflow:auto}
+.battleLog .line{margin:2px 0}
+.battleLog .actor{font-weight:700}
+.battleLog .crit{color:var(--warn)}
+.battleLog .status{color:var(--good)}
+
 .right{grid-column:2;grid-row:2 / span 2;background:var(--panel);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:10px}
 .slot{background:var(--panel2);border:1px dashed #3a3f71;border-radius:12px;padding:8px;min-height:50px}
-.log{height:100%;overflow:auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:6px;font-size:12px}
 
 .draft{grid-column:1;grid-row:4;background:var(--panel);border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .card{background:var(--panel2);border:1px solid #333b77;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}

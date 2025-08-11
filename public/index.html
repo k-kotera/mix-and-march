@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mix & March — DQ-style Patch</title>
+  <title>Mix & March — DQ-style Patch v2</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="wrap dq-layout">
     <header>
-      <div class="title">（仮）Mix & March <span class="muted">— DQ-style Layout</span></div>
+      <div class="title">（仮）Mix & March <span class="muted">— DQ-style Layout v2</span></div>
       <div class="controls">
         <div class="pill">Wave <span id="wave">1</span>/5</div>
         <div class="pill">Gold <span id="gold">0</span></div>
@@ -24,12 +24,13 @@
       <div id="partyTop" class="partyRow"></div>
     </section>
 
-    <!-- 戦闘：敵1列×6のみ表示 -->
+    <!-- 戦闘：敵1列×6のみ表示 + 直下にログ -->
     <section class="battle dq-battle">
       <div id="enemyRow" class="enemyRow"></div>
+      <div id="battleLog" class="battleLog"></div>
     </section>
 
-    <!-- 右：素材・ログ -->
+    <!-- 右：素材のみ -->
     <aside class="right">
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
@@ -37,14 +38,6 @@
           <div class="muted">クリックで<strong>強化</strong>（ATK+1 / HP+10）</div>
         </div>
         <div id="mats" class="slot"></div>
-      </div>
-      <div class="hr"></div>
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>ログ</div>
-          <div class="muted"><span class="kbd">R</span> リスタート / <span class="kbd">Space</span> 次へ</div>
-        </div>
-        <div id="log" class="log"></div>
       </div>
     </aside>
 

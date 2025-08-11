@@ -6,14 +6,16 @@ import { rollDraft } from '../ui/draft.js';
 import { renderAll } from '../ui/render.js';
 
 const ENEMY_SLOTS = 6;
+const blog = (msg)=>{ const d=document.querySelector('#battleLog'); if(!d) return; const p=document.createElement('div'); p.className='line'; p.innerHTML=msg; d.appendChild(p); d.scrollTop=d.scrollHeight; };
 
 export function startBattle(){
-  if(state.inBattle) return; if(state.party.length===0){ log('<span class="bad">編成が空です。</span>'); return; }
-  if(state.draft.length>0){ log('<span class="bad">先に報酬を選んでください</span>'); return; }
+  if(state.inBattle) return; if(state.party.length===0){ blog('<span class="bad">編成が空です。</span>'); return; }
+  if(state.draft.length>0){ blog('<span class="bad">先に報酬を選んでください</span>'); return; }
   state.inBattle=true; state.actionUsed=false;
 
   // build enemy row
   const row = el('#enemyRow'); row.innerHTML='';
+  el('#battleLog').innerHTML='';
   const enemies = genEnemies(state.wave);
   // fill 6 slots
   for(let i=0;i<ENEMY_SLOTS;i++){
@@ -27,7 +29,7 @@ export function startBattle(){
     row.appendChild(slot);
   }
 
-  // prepare runtime copies (players have no board, just stats)
+  // prepare runtime copies
   const P = state.party.map(u=>({...u, cdLeft: Math.random()*u.cd, alive:true, poison:0, frozen:0}));
   const E = enemies.map(u=>({...u, alive:true, poison:0, frozen:0, cdLeft: Math.random()*u.cd}));
 
@@ -35,16 +37,18 @@ export function startBattle(){
   if(P.some(u=>u.traits.includes('aura'))) P.forEach(u=>u.atk++);
   if(E.some(u=>u.traits.includes('aura'))) E.forEach(u=>u.atk++);
 
+  blog(`<span class="muted">— 戦闘開始 —</span>`);
+
   // loop
   let t0=performance.now(), last=performance.now(), dmgScale=1, nextEnrage=15000;
   function step(now){
     const dt=(now-last); last=now;
-    if(now - t0 > nextEnrage){ dmgScale*=1.1; nextEnrage += 15000; log(`<span class="warn">ダメージ係数上昇</span> ×${dmgScale.toFixed(2)}`); }
+    if(now - t0 > nextEnrage){ dmgScale*=1.1; nextEnrage += 15000; blog(`<span class="warn">ダメージ係数上昇 ×${dmgScale.toFixed(2)}</span>`); }
     // DOT & deaths
     for(const u of [...P,...E]){
       if(!u.alive) continue;
       if(u.poison>0){ const pd=1*dt/1000; u.hp -= pd; u.poison -= dt/1000; if(u.poison<0) u.poison=0; }
-      if(u.hp<=0){ u.alive=false; if(u.traits?.includes('deathBuff')){ const side = P.includes(u)?P:E; side.forEach(x=>{ if(x.alive) x.atk++; }); } }
+      if(u.hp<=0){ u.alive=false; if(u.traits?.includes('deathBuff')){ const side = P.includes(u)?P:E; side.forEach(x=>{ if(x.alive) x.atk++; }); blog(`<span class="status">${u.name}は倒れ、味方に士気！ATK+1</span>`); } }
     }
     // actions
     for(const a of P){
@@ -54,10 +58,7 @@ export function startBattle(){
       if(a.cdLeft<=0){
         a.cdLeft += a.cd;
         const tgt = leftmostAlive(E); if(!tgt) continue;
-        hit(a, tgt, a.atk*dmgScale, true);
-        if(a.traits.includes('multistrike')) hit(a, tgt, a.atk*0.5*dmgScale, true);
-        if(a.traits.includes('poison')) tgt.poison += 5;
-        if(a.traits.includes('freeze') && Math.random()<0.05) tgt.frozen += 1000;
+        doAttack(a, tgt, dmgScale, true);
       }
     }
     for(const a of E){
@@ -67,8 +68,9 @@ export function startBattle(){
       if(a.cdLeft<=0){
         a.cdLeft += a.cd;
         const tgt = randomAlive(P); if(!tgt) continue;
-        tgt.hp -= a.atk*dmgScale;
-        if(tgt.hp<=0) tgt.alive=false;
+        const dmg = Math.round(a.atk*dmgScale);
+        blog(`<span class="actor">${a.name}</span> のこうげき！ <span>${tgt.name}</span> に <strong>${dmg}</strong> ダメージ！`);
+        tgt.hp -= dmg; if(tgt.hp<=0){ tgt.alive=false; blog(`<span class="bad">${tgt.name} は たおれた！</span>`); }
       }
     }
     // update UI
@@ -81,6 +83,20 @@ export function startBattle(){
     loopId = requestAnimationFrame(step);
   }
   let loopId = requestAnimationFrame(step);
+}
+
+function doAttack(att, tgt, dmgScale, showPop){
+  const base = att.atk;
+  const dmg1 = Math.round(base*dmgScale);
+  blog(`<span class="actor">${att.name}</span> のこうげき！ <span>${tgt.name}</span> に <strong>${dmg1}</strong> ダメージ！`);
+  hit(att, tgt, dmg1, showPop);
+  if(att.traits.includes('multistrike')){
+    const d2 = Math.round(base*0.5*dmgScale);
+    blog(`<span class="actor">${att.name}</span> の <em>れんげき</em>！ さらに <strong>${d2}</strong> ダメージ！`);
+    hit(att, tgt, d2, showPop);
+  }
+  if(att.traits.includes('poison')){ tgt.poison += 5; blog(`<span class="status">${tgt.name} は どくに おかされた！</span>`); }
+  if(att.traits.includes('freeze') && Math.random()<0.05){ tgt.frozen += 1000; blog(`<span class="status">${tgt.name} は こおりついた！</span>`); }
 }
 
 function leftmostAlive(arr){ return arr.find(x=>x.alive); }
@@ -122,7 +138,7 @@ function hit(att, tgt, amount, showPop){
     const card=document.querySelector(`.eCard[data-id="${tgt.id}"]`);
     if(card) popDamageOn(card, amount);
   }
-  if(tgt.hp<=0) tgt.alive=false;
+  if(tgt.hp<=0){ tgt.alive=false; blog(`<span class="bad">${tgt.name} は たおれた！</span>`); }
 }
 
 function genEnemies(wave){
@@ -137,8 +153,7 @@ function genEnemies(wave){
   for(let i=0;i<n;i++){
     const sp = pool[Math.floor(Math.random()*pool.length)];
     const u = makeUnit(sp, 1+Math.floor((wave-1)/2));
-    // suffix A/B/C...
-    const suffix = String.fromCharCode(65+i);
+    const suffix = String.fromCharCode(65+i); // A/B/C...
     u.name = sp.name + suffix;
     arr.push(u);
   }
@@ -154,14 +169,14 @@ function endBattle(playerAlive){
   state.inBattle=false;
   if(playerAlive){
     if(state.wave===STAGE_WAVES+1){
-      log('<strong class="good">Stage 1 クリア！</strong> おめでとう！ <em>Rで再挑戦</em>'); 
+      blog('<strong class="good">Stage 1 クリア！</strong> おめでとう！ <em>Rで再挑戦</em>'); 
     } else {
-      log('<strong class="good">勝利！</strong> 報酬を選んでください。'); 
+      blog('<strong class="good">勝利！</strong> 報酬を選んでください。'); 
       state.wave++; 
       rollDraft();
     }
   } else {
-    log('<strong class="bad">敗北…</strong> Rで再挑戦'); 
+    blog('<strong class="bad">ぜんめつ！</strong> Rで再挑戦'); 
     state.draft=[];
   }
   renderAll(); save();
