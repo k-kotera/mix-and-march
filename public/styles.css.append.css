@@ -1,0 +1,5 @@
+
+/* Force single-frame behavior: only .screen.active is visible */
+[data-screen]{ display:none !important; }
+[data-screen].active{ display:flex !important; }
+/* keep existing layout rules when active */
