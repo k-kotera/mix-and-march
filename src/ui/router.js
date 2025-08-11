@@ -1,1 +1,0 @@
-export function setMode(mode){ console.log("mode:", mode);}
