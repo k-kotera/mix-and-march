@@ -1,1 +1,1 @@
-export function renderAll(){}
+export function renderAll(){ /* ... */ }

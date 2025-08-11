@@ -1,1 +1,1 @@
-export let state = {}; export function freshRun(){return {};};
+export let state={};

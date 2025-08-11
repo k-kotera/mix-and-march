@@ -1,1 +1,1 @@
-export function startBattle(){}
+export function startBattle(rng){ /* ... */ }

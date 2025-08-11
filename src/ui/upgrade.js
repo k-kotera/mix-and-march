@@ -1,1 +1,1 @@
-export function doCombine(){}
+export function makeUnit(spec){ /* ... */ }

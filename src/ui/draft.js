@@ -1,1 +1,1 @@
-export function rollDraft(){}
+export function rollDraft(rng){ /* ... */ }
