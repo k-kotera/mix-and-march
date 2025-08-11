@@ -3,46 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mix & March — DQ-style Patch v2</title>
+  <title>Mix & March — Screens Patch</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="wrap dq-layout">
-    <header>
-      <div class="title">（仮）Mix & March <span class="muted">— DQ-style Layout v2</span></div>
-      <div class="controls">
-        <div class="pill">Wave <span id="wave">1</span>/5</div>
-        <div class="pill">Gold <span id="gold">0</span></div>
-        <button id="btnSpeed">速度 ×1</button>
-        <button id="btnStart">バトル開始</button>
-        <button id="btnNew">新規ラン</button>
-      </div>
-    </header>
-
-    <!-- 上パネル：自軍ステータス一覧（表示のみ） -->
-    <section class="partyTop">
-      <div id="partyTop" class="partyRow"></div>
-    </section>
-
-    <!-- 戦闘：敵1列×6のみ表示 + 直下にログ -->
-    <section class="battle dq-battle">
-      <div id="enemyRow" class="enemyRow"></div>
-      <div id="battleLog" class="battleLog"></div>
-    </section>
-
-    <!-- 右：素材のみ -->
-    <aside class="right">
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>素材</div>
-          <div class="muted">クリックで<strong>強化</strong>（ATK+1 / HP+10）</div>
+  <div class="frame">
+    <!-- Title Screen -->
+    <section class="screen" id="screen-title" data-screen>
+      <div class="panel center">
+        <h1>（仮）Mix & March</h1>
+        <p class="muted">配合 × 自動戦闘（5〜10分ローグライト）</p>
+        <div class="row gap">
+          <button id="btnTitleStart">はじめる</button>
+          <button id="btnTitleContinue">つづきから</button>
         </div>
-        <div id="mats" class="slot"></div>
+        <div class="tiny muted">Space: バトル / R: 新規ラン</div>
       </div>
-    </aside>
+    </section>
 
-    <!-- 下：ドラフト3択 -->
-    <section class="draft" id="draft"></section>
+    <!-- Briefing Screen -->
+    <section class="screen" id="screen-brief" data-screen hidden>
+      <header class="bar">
+        <div class="left">Wave <span id="wave">1</span>/5 | Gold <span id="gold">0</span> | 速度 <span id="spd">×1</span></div>
+        <div class="right"><button id="btnSpeed">速度切替</button><button id="btnToBattle">つぎの戦闘へ</button></div>
+      </header>
+      <div class="panel scroll">
+        <h2>編成</h2>
+        <div id="partyTop" class="partyRow"></div>
+        <div class="row gap">
+          <div class="badge">素材 <span id="matNum">0</span></div>
+          <button id="btnCombine" disabled>配合（同種×2）</button>
+        </div>
+        <div class="hr"></div>
+        <h2>ドラフト</h2>
+        <div id="draft" class="draft"></div>
+      </div>
+      <footer class="bar tiny muted">ヒント：各ウェーブで<strong>配合または強化を1回</strong>だけ実行できます</footer>
+    </section>
+
+    <!-- Battle Screen -->
+    <section class="screen" id="screen-battle" data-screen hidden>
+      <header class="bar">
+        <div class="left">Wave <span id="wave_b">1</span>/5</div>
+        <div class="right"><button id="btnWithdraw">撤退（敗北扱い）</button></div>
+      </header>
+      <div class="panel">
+        <div id="enemyRow" class="enemyRow"></div>
+        <div id="battleLog" class="battleLog"></div>
+      </div>
+    </section>
+
+    <!-- Victory Screen -->
+    <section class="screen" id="screen-victory" data-screen hidden>
+      <div class="panel center">
+        <h1>ステージクリア！</h1>
+        <p>おめでとう！</p>
+        <div class="row gap">
+          <button id="btnVictoryAgain">もう一度</button>
+          <button id="btnVictoryTitle">タイトルへ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Defeat Screen -->
+    <section class="screen" id="screen-defeat" data-screen hidden>
+      <div class="panel center">
+        <h1>ぜんめつ…</h1>
+        <p class="muted">タイトルに戻るか、すぐ再挑戦できます。</p>
+        <div class="row gap">
+          <button id="btnDefeatRetry">再挑戦</button>
+          <button id="btnDefeatTitle">タイトルへ</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script type="module" src="./src/main.js"></script>

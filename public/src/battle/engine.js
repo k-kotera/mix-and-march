@@ -1,23 +1,27 @@
 import { STAGE_WAVES } from '../data/constants.js';
 import { state, save } from '../state.js';
-import { el, log } from '../utils.js';
+import { el } from '../utils.js';
 import { makeUnit } from '../ui/upgrade.js';
 import { rollDraft } from '../ui/draft.js';
-import { renderAll } from '../ui/render.js';
+import { renderBrief } from '../ui/render.js';
+import { Screens } from '../ui/screens.js';
 
 const ENEMY_SLOTS = 6;
 const blog = (msg)=>{ const d=document.querySelector('#battleLog'); if(!d) return; const p=document.createElement('div'); p.className='line'; p.innerHTML=msg; d.appendChild(p); d.scrollTop=d.scrollHeight; };
 
 export function startBattle(){
   if(state.inBattle) return; if(state.party.length===0){ blog('<span class="bad">編成が空です。</span>'); return; }
-  if(state.draft.length>0){ blog('<span class="bad">先に報酬を選んでください</span>'); return; }
+  if(state.draft.length>0){ blog('<span class="bad">先にドラフトから1つ選んでください</span>'); return; }
   state.inBattle=true; state.actionUsed=false;
+
+  // switch screen
+  Screens.show('battle');
+  el('#wave_b').textContent = state.wave;
 
   // build enemy row
   const row = el('#enemyRow'); row.innerHTML='';
   el('#battleLog').innerHTML='';
   const enemies = genEnemies(state.wave);
-  // fill 6 slots
   for(let i=0;i<ENEMY_SLOTS;i++){
     const slot=document.createElement('div'); slot.className='eSlot';
     if(i<enemies.length){
@@ -29,28 +33,23 @@ export function startBattle(){
     row.appendChild(slot);
   }
 
-  // prepare runtime copies
   const P = state.party.map(u=>({...u, cdLeft: Math.random()*u.cd, alive:true, poison:0, frozen:0}));
   const E = enemies.map(u=>({...u, alive:true, poison:0, frozen:0, cdLeft: Math.random()*u.cd}));
 
-  // apply aura
   if(P.some(u=>u.traits.includes('aura'))) P.forEach(u=>u.atk++);
   if(E.some(u=>u.traits.includes('aura'))) E.forEach(u=>u.atk++);
 
   blog(`<span class="muted">— 戦闘開始 —</span>`);
 
-  // loop
   let t0=performance.now(), last=performance.now(), dmgScale=1, nextEnrage=15000;
   function step(now){
     const dt=(now-last); last=now;
     if(now - t0 > nextEnrage){ dmgScale*=1.1; nextEnrage += 15000; blog(`<span class="warn">ダメージ係数上昇 ×${dmgScale.toFixed(2)}</span>`); }
-    // DOT & deaths
     for(const u of [...P,...E]){
       if(!u.alive) continue;
       if(u.poison>0){ const pd=1*dt/1000; u.hp -= pd; u.poison -= dt/1000; if(u.poison<0) u.poison=0; }
       if(u.hp<=0){ u.alive=false; if(u.traits?.includes('deathBuff')){ const side = P.includes(u)?P:E; side.forEach(x=>{ if(x.alive) x.atk++; }); blog(`<span class="status">${u.name}は倒れ、味方に士気！ATK+1</span>`); } }
     }
-    // actions
     for(const a of P){
       if(!a.alive) continue;
       if(a.frozen>0){ a.frozen -= dt; continue; }
@@ -73,16 +72,33 @@ export function startBattle(){
         tgt.hp -= dmg; if(tgt.hp<=0){ tgt.alive=false; blog(`<span class="bad">${tgt.name} は たおれた！</span>`); }
       }
     }
-    // update UI
     updateEnemyUI(E);
-    updatePartyUI(P);
-    // end conditions
+    updateBriefHP(P);
     const aliveP = P.some(x=>x.alive);
     const aliveE = E.some(x=>x.alive);
-    if(!aliveP || !aliveE){ cancelAnimationFrame(loopId); endBattle(aliveP); return; }
+    if(!aliveP || !aliveE){ cancelAnimationFrame(loopId); onEnd(aliveP); return; }
     loopId = requestAnimationFrame(step);
   }
   let loopId = requestAnimationFrame(step);
+}
+
+function onEnd(playerAlive){
+  state.inBattle=false;
+  if(playerAlive){
+    blog('<strong class="good">勝利！</strong>');
+    state.wave++;
+    if(state.wave>STAGE_WAVES+1){
+      Screens.show('victory');
+    }else{
+      // next briefing: roll new draft and show screen
+      rollDraft();
+      renderBrief();
+      Screens.show('brief');
+    }
+  }else{
+    Screens.show('defeat');
+  }
+  save();
 }
 
 function doAttack(att, tgt, dmgScale, showPop){
@@ -110,16 +126,16 @@ function updateEnemyUI(E){
     card.querySelector('.hp').style.width = Math.max(0,(e.hp/e.maxhp)*100)+'%';
   }
 }
-function updatePartyUI(P){
-  const root = el('#partyTop');
-  const cards = [...root.querySelectorAll('.pCard')];
+function updateBriefHP(P){
+  // Update numbers on briefing party cards (visible during battle switch back)
+  const root = document.querySelector('#partyTop');
+  const cards = root? [...root.querySelectorAll('.pCard')] : [];
   P.forEach((u,i)=>{
-    const card = cards[i];
-    if(!card) return;
-    card.style.opacity = u.alive? 1:0.5;
+    const card = cards[i]; if(!card) return;
     const hp = card.querySelector('[data-hp]'); if(hp) hp.textContent = Math.max(0, Math.round(u.hp));
   });
 }
+
 function popDamageOn(card, amount){
   const dmg=document.createElement('div'); dmg.className='dmg'; dmg.textContent = Math.round(amount);
   card.appendChild(dmg);
@@ -153,7 +169,7 @@ function genEnemies(wave){
   for(let i=0;i<n;i++){
     const sp = pool[Math.floor(Math.random()*pool.length)];
     const u = makeUnit(sp, 1+Math.floor((wave-1)/2));
-    const suffix = String.fromCharCode(65+i); // A/B/C...
+    const suffix = String.fromCharCode(65+i);
     u.name = sp.name + suffix;
     arr.push(u);
   }
@@ -163,21 +179,4 @@ function genEnemies(wave){
     return [boss];
   }
   return arr;
-}
-
-function endBattle(playerAlive){
-  state.inBattle=false;
-  if(playerAlive){
-    if(state.wave===STAGE_WAVES+1){
-      blog('<strong class="good">Stage 1 クリア！</strong> おめでとう！ <em>Rで再挑戦</em>'); 
-    } else {
-      blog('<strong class="good">勝利！</strong> 報酬を選んでください。'); 
-      state.wave++; 
-      rollDraft();
-    }
-  } else {
-    blog('<strong class="bad">ぜんめつ！</strong> Rで再挑戦'); 
-    state.draft=[];
-  }
-  renderAll(); save();
 }
