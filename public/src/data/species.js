@@ -1,0 +1,8 @@
+export const SPECIES = [
+  {id:'slime', name:'スライム', role:'前衛', atk:4, hp:40, cd:900, traits:['poison']},
+  {id:'wolf', name:'ウルフ', role:'前衛', atk:6, hp:32, cd:700, traits:['multistrike']},
+  {id:'mage', name:'メイジ', role:'後衛', atk:8, hp:24, cd:1200, traits:['freeze']},
+  {id:'spirit', name:'スピリット', role:'支援', atk:3, hp:26, cd:1000, traits:['aura']},
+  {id:'nec', name:'ネクロ', role:'後衛', atk:5, hp:28, cd:1100, traits:['summon']},
+  {id:'guard', name:'ガード', role:'前衛', atk:5, hp:50, cd:1000, traits:['deathBuff']},
+];

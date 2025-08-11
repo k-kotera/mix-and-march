@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mix & March — Modular Prototype</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">（仮）Mix & March <span class="muted">— 自動戦闘 × 配合（1手）ローグライト</span></div>
+      <div class="controls">
+        <div class="pill">Wave <span id="wave">1</span>/7</div>
+        <div class="pill">Gold <span id="gold">0</span></div>
+        <button id="btnSpeed">速度 ×1</button>
+        <button id="btnStart">バトル開始</button>
+        <button id="btnNew">新規ラン</button>
+      </div>
+    </header>
+
+    <section class="battle">
+      <div class="board" id="board"></div>
+    </section>
+
+    <aside class="right">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>編成（最大5）</div>
+          <div class="muted">1ウェーブごとに <span class="badge">配合 or 強化</span> を1回だけ</div>
+        </div>
+        <div id="party" class="slot"></div>
+      </div>
+      <div class="hr"></div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>素材</div>
+          <div class="muted">クリックで<strong>強化</strong>（ATK+1 または HP+10）</div>
+        </div>
+        <div id="mats" class="slot"></div>
+      </div>
+      <div class="hr"></div>
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>ログ</div>
+          <div class="muted"><span class="kbd">R</span> リスタート / <span class="kbd">Space</span> 次へ</div>
+        </div>
+        <div id="log" class="log"></div>
+      </div>
+    </aside>
+
+    <section class="draft" id="draft"></section>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

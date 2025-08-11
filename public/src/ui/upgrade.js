@@ -1,0 +1,6 @@
+import { SPECIES } from '../data/species.js';
+import { state, save } from '../state.js';
+import { log } from '../utils.js';
+export function findCombinables(){ const map={}; state.party.forEach(u=>{ const key=`${u.species}_T${u.tier}`; map[key]=(map[key]||0)+1; }); return Object.entries(map).filter(([k,v])=>v>=2 && !k.endsWith('_T3')).map(([key])=>({key})); }
+export function doCombine(){ const combos=findCombinables(); if(!combos.length) return; const choice=combos[0].key; const [species, tstr]=choice.split('_T'); const tier=+tstr; let count=0; const keep=[]; for(const u of state.party){ if(u.species===species && u.tier===tier && count<2){ count++; } else keep.push(u);} const spec = SPECIES.find(s=>s.id===species); const newU = makeUnit(spec, tier+1); state.party = keep.concat([newU]); state.actionUsed=true; log(`<span class="good">配合</span>：${spec.name}★${tier}+${spec.name}★${tier} → ${spec.name}★${tier+1}`); save(); }
+export function makeUnit(spec, tier=1){ return { id:Math.random().toString(36).slice(2,9), species:spec.id, name:spec.name, role:spec.role, tier, atk: Math.round(spec.atk * (1 + (tier-1)*0.6)), maxhp: Math.round(spec.hp * (1 + (tier-1)*0.6)), hp: Math.round(spec.hp * (1 + (tier-1)*0.6)), cd: spec.cd, traits:[...spec.traits] }; }
