@@ -7,12 +7,18 @@ import { SPECIES } from './data/species.js';
 import { makeUnit } from './ui/upgrade.js';
 import { STAGE_WAVES } from './data/constants.js';
 
+function ensureStarters(){
+  if(!Array.isArray(state.party)) state.party = [];
+  if(state.party.length===0){
+    state.party.push(makeUnit(SPECIES[Math.floor(Math.random()*SPECIES.length)],1));
+    state.party.push(makeUnit(SPECIES[Math.floor(Math.random()*SPECIES.length)],1));
+  }
+}
+
 function newRun(){
   Object.assign(state, freshRun());
-  // starter 2 units
-  state.party.push(makeUnit(SPECIES[Math.floor(Math.random()*SPECIES.length)],1));
-  state.party.push(makeUnit(SPECIES[Math.floor(Math.random()*SPECIES.length)],1));
-  log('<span class="good">Stage 1 開始！</span> 報酬を選ぶ→配合/強化（1回）→バトルの流れです。');
+  ensureStarters();
+  log('<span class="good">Stage 1 開始！</span> 下のドラフトから1つ選んでください。Spaceでバトル開始。');
   rollDraft(); renderAll(); save();
 }
 
@@ -29,14 +35,13 @@ window.addEventListener('keydown',(e)=>{
 
 document.addEventListener('DOMContentLoaded',()=>{
   Object.assign(window, { newRun, startOrNext });
-  const s = load(); Object.assign(state, s || {});
-  if(!state.party || !state.party.length){ Object.assign(state, freshRun()); }
-  if(!state.party.length){ state.party.push(makeUnit(SPECIES[Math.floor(Math.random()*SPECIES.length)],1)); }
+  const saved = load();
+  if(saved && typeof saved==='object'){ Object.assign(state, saved); }
+  else { Object.assign(state, freshRun()); }
+  ensureStarters();
   renderAll();
-  if(state.party.length<2){ state.party.push(makeUnit(SPECIES[Math.floor(Math.random()*SPECIES.length)],1)); }
-  renderAll();
-  document.getElementById('btnStart').onclick = startOrNext;
-  document.getElementById('btnSpeed').onclick = ()=>{ state.speed = state.speed===1?2: state.speed===2?3: state.speed===3?4:1; renderAll(); };
-  document.getElementById('btnNew').onclick = ()=>{ if(confirm('現在のランを破棄して新規スタートしますか？')) newRun(); };
   if(!state.draft || state.draft.length===0){ rollDraft(); }
+  el('#btnStart').onclick = startOrNext;
+  el('#btnSpeed').onclick = ()=>{ state.speed = state.speed===1?2: state.speed===2?3: state.speed===3?4:1; renderAll(); };
+  el('#btnNew').onclick = ()=>{ if(confirm('現在のランを破棄して新規スタートしますか？')) newRun(); };
 });
