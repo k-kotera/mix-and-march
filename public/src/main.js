@@ -15,6 +15,7 @@ function ensureStarters(){
 }
 
 function newRun(){
+  console.log('[Mix&March] newRun');
   Object.assign(state, freshRun());
   ensureStarters();
   rollDraft();
@@ -24,29 +25,79 @@ function newRun(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  // mark Title active at boot to be safe
+  console.log('[Mix&March] DOM ready');
+  // Always start at title
   Screens.show('title');
 
-  document.getElementById('btnTitleStart').onclick = ()=>{ newRun(); };
-  document.getElementById('btnTitleContinue').onclick = ()=>{
-    const saved = load(); if(saved){ Object.assign(state, saved); ensureStarters(); Screens.show('brief'); renderBrief(); } else { newRun(); }
-  };
+  // Title buttons
+  const btnStart = document.getElementById('btnTitleStart');
+  const btnCont  = document.getElementById('btnTitleContinue');
+  if(btnStart){
+    btnStart.addEventListener('click', ()=>{
+      console.log('[Mix&March] Start clicked');
+      newRun();
+    });
+  } else {
+    console.warn('btnTitleStart not found');
+  }
+  if(btnCont){
+    btnCont.addEventListener('click', ()=>{
+      console.log('[Mix&March] Continue clicked');
+      const saved = load();
+      if(saved){ Object.assign(state, saved); ensureStarters(); Screens.show('brief'); renderBrief(); }
+      else { newRun(); }
+    });
+  }
 
-  document.getElementById('btnSpeed').onclick = ()=>{ state.speed = state.speed===1?2: state.speed===2?3: state.speed===3?4:1; save(); renderBrief(); };
-  document.getElementById('btnToBattle').onclick = ()=> startBattle();
+  // Briefing controls
+  const btnSpeed = document.getElementById('btnSpeed');
+  const btnToBattle = document.getElementById('btnToBattle');
+  if(btnSpeed){
+    btnSpeed.addEventListener('click', ()=>{
+      state.speed = state.speed===1?2: state.speed===2?3: state.speed===3?4:1;
+      save(); renderBrief();
+    });
+  }
+  if(btnToBattle){
+    btnToBattle.addEventListener('click', ()=>{
+      console.log('[Mix&March] To battle');
+      startBattle();
+    });
+  }
 
-  document.getElementById('btnWithdraw').onclick = ()=>{ Screens.show('defeat'); };
+  // Battle controls
+  const btnWithdraw = document.getElementById('btnWithdraw');
+  if(btnWithdraw){
+    btnWithdraw.addEventListener('click', ()=>{
+      console.log('[Mix&March] Withdraw -> defeat');
+      Screens.show('defeat');
+    });
+  }
 
-  document.getElementById('btnVictoryAgain').onclick = ()=>{ newRun(); };
-  document.getElementById('btnVictoryTitle').onclick = ()=>{ Screens.show('title'); };
-  document.getElementById('btnDefeatRetry').onclick = ()=>{ newRun(); };
-  document.getElementById('btnDefeatTitle').onclick = ()=>{ Screens.show('title'); };
+  // Result buttons
+  const vAgain = document.getElementById('btnVictoryAgain');
+  const vTitle = document.getElementById('btnVictoryTitle');
+  const dRetry = document.getElementById('btnDefeatRetry');
+  const dTitle = document.getElementById('btnDefeatTitle');
+  vAgain && vAgain.addEventListener('click', ()=> newRun());
+  vTitle && vTitle.addEventListener('click', ()=> Screens.show('title'));
+  dRetry && dRetry.addEventListener('click', ()=> newRun());
+  dTitle && dTitle.addEventListener('click', ()=> Screens.show('title'));
 
+  // Keyboard
   window.addEventListener('keydown',(e)=>{
-    if(e.key===' '){ e.preventDefault(); if(Screens.current==='brief'){ startBattle(); } }
-    if(e.key==='r'||e.key==='R'){ e.preventDefault(); newRun(); }
+    if(e.key===' '){
+      e.preventDefault();
+      if(Screens.current==='brief'){ console.log('[Mix&March] Space -> battle'); startBattle(); }
+    }
+    if(e.key==='r'||e.key==='R'){
+      e.preventDefault();
+      console.log('[Mix&March] R -> newRun');
+      newRun();
+    }
   });
 
+  // Load saved (no auto-transition)
   const saved = load();
   if(saved){ Object.assign(state, saved); ensureStarters(); }
 });

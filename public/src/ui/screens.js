@@ -1,4 +1,3 @@
-// Robust screen toggler: toggles .active only
 export const Screens = {
   current: 'title',
   show(id){
@@ -7,5 +6,6 @@ export const Screens = {
       s.classList.toggle('active', s.id===target);
     });
     this.current = id;
+    console.log('[Mix&March] Screen ->', id);
   }
 };
