@@ -1,8 +1,9 @@
 import { TRAITS } from '../data/traits.js';
 import { SPECIES } from '../data/species.js';
 import { state } from '../state.js';
-import { renderAll } from './render.js';
+import { renderBrief } from './render.js';
 import { makeUnit } from './upgrade.js';
+
 export function rollDraft(){
   const cards=[];
   const s = SPECIES[Math.floor(Math.random()*SPECIES.length)];
@@ -13,5 +14,5 @@ export function rollDraft(){
   const n = 1 + (Math.random()<0.2?1:0);
   cards.push({type:'mat', n});
   state.draft = cards;
-  renderAll();
+  renderBrief(); // ← renderAll ではなく renderBrief
 }
