@@ -1,11 +1,10 @@
-// Screen manager using .active class (robust even if 'hidden' is ignored)
+// Robust screen toggler: toggles .active only
 export const Screens = {
   current: 'title',
   show(id){
-    const wanted = `screen-${id}`;
+    const target = `screen-${id}`;
     document.querySelectorAll('[data-screen]').forEach(s=>{
-      if(s.id===wanted){ s.classList.add('active'); s.removeAttribute('hidden'); }
-      else { s.classList.remove('active'); s.setAttribute('hidden',''); }
+      s.classList.toggle('active', s.id===target);
     });
     this.current = id;
   }

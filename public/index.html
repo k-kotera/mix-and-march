@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mix & March — Screens Patch</title>
+  <title>Mix & March — Screens (One Frame)</title>
   <link rel="stylesheet" href="./styles.css" />
+  <!-- ONE-FRAME ENFORCER -->
+  <style>
+    [data-screen]{ display:none; }
+    [data-screen].active{ display:flex; }
+  </style>
 </head>
 <body>
   <div class="frame">
     <!-- Title Screen -->
-    <section class="screen" id="screen-title" data-screen>
+    <section class="screen active" id="screen-title" data-screen>
       <div class="panel center">
         <h1>（仮）Mix & March</h1>
         <p class="muted">配合 × 自動戦闘（5〜10分ローグライト）</p>
@@ -22,7 +27,7 @@
     </section>
 
     <!-- Briefing Screen -->
-    <section class="screen" id="screen-brief" data-screen hidden>
+    <section class="screen" id="screen-brief" data-screen>
       <header class="bar">
         <div class="left">Wave <span id="wave">1</span>/5 | Gold <span id="gold">0</span> | 速度 <span id="spd">×1</span></div>
         <div class="right"><button id="btnSpeed">速度切替</button><button id="btnToBattle">つぎの戦闘へ</button></div>
@@ -42,7 +47,7 @@
     </section>
 
     <!-- Battle Screen -->
-    <section class="screen" id="screen-battle" data-screen hidden>
+    <section class="screen" id="screen-battle" data-screen>
       <header class="bar">
         <div class="left">Wave <span id="wave_b">1</span>/5</div>
         <div class="right"><button id="btnWithdraw">撤退（敗北扱い）</button></div>
@@ -54,7 +59,7 @@
     </section>
 
     <!-- Victory Screen -->
-    <section class="screen" id="screen-victory" data-screen hidden>
+    <section class="screen" id="screen-victory" data-screen>
       <div class="panel center">
         <h1>ステージクリア！</h1>
         <p>おめでとう！</p>
@@ -66,7 +71,7 @@
     </section>
 
     <!-- Defeat Screen -->
-    <section class="screen" id="screen-defeat" data-screen hidden>
+    <section class="screen" id="screen-defeat" data-screen>
       <div class="panel center">
         <h1>ぜんめつ…</h1>
         <p class="muted">タイトルに戻るか、すぐ再挑戦できます。</p>
