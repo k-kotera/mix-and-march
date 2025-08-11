@@ -1,3 +1,0 @@
-# Mix & March Modular Prototype
-
-Placeholder structure.
