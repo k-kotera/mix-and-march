@@ -1,3 +1,4 @@
+// Overwrite public/src/battle/engine.js to add player strip on Battle screen
 import { STAGE_WAVES } from '../data/constants.js';
 import { state, save } from '../state.js';
 import { el } from '../utils.js';
@@ -18,9 +19,13 @@ export function startBattle(){
   Screens.show('battle');
   el('#wave_b').textContent = state.wave;
 
-  // build enemy row
+  // build enemy row & clear log
   const row = el('#enemyRow'); row.innerHTML='';
   el('#battleLog').innerHTML='';
+
+  // build player's read-only strip
+  renderPartyStrip('#partyTopBattle', state.party);
+
   const enemies = genEnemies(state.wave);
   for(let i=0;i<ENEMY_SLOTS;i++){
     const slot=document.createElement('div'); slot.className='eSlot';
@@ -73,7 +78,7 @@ export function startBattle(){
       }
     }
     updateEnemyUI(E);
-    updateBriefHP(P);
+    updatePartyStripHP('#partyTopBattle', P);
     const aliveP = P.some(x=>x.alive);
     const aliveE = E.some(x=>x.alive);
     if(!aliveP || !aliveE){ cancelAnimationFrame(loopId); onEnd(aliveP); return; }
@@ -90,7 +95,6 @@ function onEnd(playerAlive){
     if(state.wave>STAGE_WAVES+1){
       Screens.show('victory');
     }else{
-      // next briefing: roll new draft and show screen
       rollDraft();
       renderBrief();
       Screens.show('brief');
@@ -126,15 +130,31 @@ function updateEnemyUI(E){
     card.querySelector('.hp').style.width = Math.max(0,(e.hp/e.maxhp)*100)+'%';
   }
 }
-function updateBriefHP(P){
-  // Update numbers on briefing party cards (visible during battle switch back)
-  const root = document.querySelector('#partyTop');
-  const cards = root? [...root.querySelectorAll('.pCard')] : [];
+
+// ---- Player strip helpers ----
+function renderPartyStrip(rootSel, party){
+  const root = document.querySelector(rootSel);
+  if(!root) return;
+  root.innerHTML='';
+  party.forEach(u=>{
+    const div=document.createElement('div'); div.className='pCard';
+    div.innerHTML = `
+      <div class="name">${u.name}★${u.tier}</div>
+      <div><span class="badge">ATK ${u.atk}</span> <span class="badge">HP <span data-hp>${u.hp}</span>/${u.maxhp}</span></div>
+      <div class="badges">${u.traits.map(t=>`<span class="badge">${t}</span>`).join('')}</div>`;
+    root.appendChild(div);
+  });
+}
+function updatePartyStripHP(rootSel, P){
+  const root = document.querySelector(rootSel); if(!root) return;
+  const cards = [...root.querySelectorAll('.pCard')];
   P.forEach((u,i)=>{
     const card = cards[i]; if(!card) return;
+    card.style.opacity = u.alive? 1:0.5;
     const hp = card.querySelector('[data-hp]'); if(hp) hp.textContent = Math.max(0, Math.round(u.hp));
   });
 }
+// ------------------------------
 
 function popDamageOn(card, amount){
   const dmg=document.createElement('div'); dmg.className='dmg'; dmg.textContent = Math.round(amount);

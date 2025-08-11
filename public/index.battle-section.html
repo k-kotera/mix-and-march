@@ -1,0 +1,16 @@
+<!-- Replace only the Battle Screen section in public/index.html -->
+<!-- Battle Screen -->
+<section class="screen" id="screen-battle" data-screen>
+  <header class="bar">
+    <div class="left">Wave <span id="wave_b">1</span>/5</div>
+    <div class="right"><button id="btnWithdraw">撤退（敗北扱い）</button></div>
+  </header>
+  <div class="panel">
+    <!-- 自軍ステータス（読み取り専用） -->
+    <div id="partyTopBattle" class="partyRow compact"></div>
+    <!-- 敵1列 -->
+    <div id="enemyRow" class="enemyRow"></div>
+    <!-- DQ風ログ -->
+    <div id="battleLog" class="battleLog"></div>
+  </div>
+</section>

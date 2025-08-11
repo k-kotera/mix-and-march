@@ -1,5 +1,8 @@
 
-/* Force single-frame behavior: only .screen.active is visible */
-[data-screen]{ display:none !important; }
-[data-screen].active{ display:flex !important; }
-/* keep existing layout rules when active */
+/* Battle screen's player strip (read-only) */
+.partyRow{display:flex;gap:10px;overflow-x:auto;padding:6px 2px}
+.partyRow.compact .pCard{min-width:160px}
+.pCard{min-width:220px;background:#21264a;border:1px solid #2f376f;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.pCard .name{font-weight:700}
+.pCard .badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-block;background:#24316b;border:1px solid #3b4a92;border-radius:999px;padding:2px 8px;font-size:11px}
