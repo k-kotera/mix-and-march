@@ -42,3 +42,5 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .battleLog .status{color:var(--good)}
 .warn{color:var(--warn)}
 .bad{color:var(--bad)}
+#partyTopBattle { margin-bottom: 8px; min-height: 84px; }
+.partyRow.compact .pCard { min-width: 160px; }
