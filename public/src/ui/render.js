@@ -1,9 +1,9 @@
 import { TRAITS } from '../data/traits.js';
-import { SPECIES } from '../data/species.js';
 import { MAX_SLOTS } from '../data/constants.js';
-import { el, rnd, log } from '../utils.js';
+import { el } from '../utils.js';
 import { state, save } from '../state.js';
 import { doCombine, findCombinables } from './upgrade.js';
+import { afterPick } from './shared.js';
 
 export function renderTop(){ el('#wave').textContent = state.wave; el('#gold').textContent = state.gold; el('#btnSpeed').textContent = `速度 ×${state.speed}`; }
 export function renderParty(){
@@ -19,7 +19,9 @@ export function renderParty(){
   });
   const can = findCombinables();
   if(can.length){ const hint=document.createElement('div'); hint.className='muted'; hint.innerHTML = '配合候補: ' + can.map(c=>`${c.key} ×2 → <span class="good">配合</span>`).join(', '); box.appendChild(hint); }
-  box.onclick = (e)=>{ const b=e.target.closest('button'); if(!b) return; const i=+b.dataset.i; const act=b.dataset.act; const u=state.party[i];
+  box.onclick = (e)=>{
+    const b=e.target.closest('button'); if(!b) return;
+    const i=+b.dataset.i; const act=b.dataset.act; const u=state.party[i];
     if(act==='buffAtk' && !state.actionUsed && state.mats>0){ u.atk++; state.mats--; state.actionUsed=true; renderAll(); save(); }
     if(act==='buffHp' && !state.actionUsed && state.mats>0){ u.maxhp+=10; u.hp+=10; state.mats--; state.actionUsed=true; renderAll(); save(); }
     if(act==='sell'){ state.gold++; state.party.splice(i,1); renderAll(); save(); }
@@ -60,4 +62,3 @@ export function renderDraft(){
   });
 }
 export function renderAll(){ renderTop(); renderParty(); renderMats(); renderDraft(); }
-export function afterPick(){ state.gold += 1; save(); renderAll(); }

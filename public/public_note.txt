@@ -1,0 +1,1 @@
+All runtime files are under /public so Vercel serves them as-is.

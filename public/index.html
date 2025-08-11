@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mix & March — Modular Prototype</title>
+  <title>Mix & March — Stage 1 Prototype</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="title">（仮）Mix & March <span class="muted">— 自動戦闘 × 配合（1手）ローグライト</span></div>
+      <div class="title">（仮）Mix & March <span class="muted">— Stage 1 Prototype</span></div>
       <div class="controls">
-        <div class="pill">Wave <span id="wave">1</span>/7</div>
+        <div class="pill">Wave <span id="wave">1</span>/5</div>
         <div class="pill">Gold <span id="gold">0</span></div>
         <button id="btnSpeed">速度 ×1</button>
         <button id="btnStart">バトル開始</button>
@@ -27,7 +27,7 @@
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>編成（最大5）</div>
-          <div class="muted">1ウェーブごとに <span class="badge">配合 or 強化</span> を1回だけ</div>
+          <div class="muted">各ウェーブ <span class="badge">配合 or 強化</span> を1回</div>
         </div>
         <div id="party" class="slot"></div>
       </div>
@@ -35,7 +35,7 @@
       <div>
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>素材</div>
-          <div class="muted">クリックで<strong>強化</strong>（ATK+1 または HP+10）</div>
+          <div class="muted">クリックで<strong>強化</strong>（ATK+1 / HP+10）</div>
         </div>
         <div id="mats" class="slot"></div>
       </div>
